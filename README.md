@@ -1,5 +1,6 @@
 # zbx-whatsminer
 MicroBT WhatsMiner template for Zabbix
+
 Tested on WhatsMiner M21s
 
 Темплейт работает с CGMiner API, обычно доступным на порту 4028 асика (порт задается макросом {$CGM_PORT}).
