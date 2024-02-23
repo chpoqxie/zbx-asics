@@ -1,0 +1,382 @@
+zabbix_export:
+  version: '5.4'
+  date: '2024-02-23T18:05:12Z'
+  groups:
+    -
+      uuid: 5a3b4210defe473da9627b2ca03e360c
+      name: Templates/Mining
+  templates:
+    -
+      uuid: ad02cc793b7e47c3b360ac0e81f20265
+      template: TeamRedMiner
+      name: TeamRedMiner
+      groups:
+        -
+          name: Templates/Mining
+      items:
+        -
+          uuid: cc593c7a23a5460285ecd42d7dc7f466
+          name: 'Miner gpucount'
+          type: EXTERNAL
+          key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"gpucount"]'
+          delay: 15m
+          history: '0'
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            -
+              type: STR_REPLACE
+              parameters:
+                - '"'''
+                - '"'
+            -
+              type: STR_REPLACE
+              parameters:
+                - '''"'
+                - '"'
+            -
+              type: STR_REPLACE
+              parameters:
+                - ''''
+                - '"'
+            -
+              type: STR_REPLACE
+              parameters:
+                - 'False'
+                - 'false'
+            -
+              type: STR_REPLACE
+              parameters:
+                - 'True'
+                - 'true'
+        -
+          uuid: 62323cbd931d4766a1ccf1619646efad
+          name: 'Miner stats'
+          type: EXTERNAL
+          key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"stats"]'
+          delay: 5m
+          history: '0'
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            -
+              type: STR_REPLACE
+              parameters:
+                - '"'''
+                - '"'
+            -
+              type: STR_REPLACE
+              parameters:
+                - '''"'
+                - '"'
+            -
+              type: STR_REPLACE
+              parameters:
+                - ''''
+                - '"'
+            -
+              type: STR_REPLACE
+              parameters:
+                - 'False'
+                - 'false'
+            -
+              type: STR_REPLACE
+              parameters:
+                - 'True'
+                - 'true'
+        -
+          uuid: 29f0ed284d4a4a1699d6cf9f718640c0
+          name: 'Miner summary'
+          type: EXTERNAL
+          key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"summary"]'
+          delay: 5m
+          history: '0'
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            -
+              type: STR_REPLACE
+              parameters:
+                - '"'''
+                - '"'
+            -
+              type: STR_REPLACE
+              parameters:
+                - '''"'
+                - '"'
+            -
+              type: STR_REPLACE
+              parameters:
+                - ''''
+                - '"'
+            -
+              type: STR_REPLACE
+              parameters:
+                - 'False'
+                - 'false'
+            -
+              type: STR_REPLACE
+              parameters:
+                - 'True'
+                - 'true'
+        -
+          uuid: c4958160ae5d40f8825359de2862dcfe
+          name: 'Miner version'
+          type: EXTERNAL
+          key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"version"]'
+          delay: 1h
+          history: '0'
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            -
+              type: STR_REPLACE
+              parameters:
+                - '"'''
+                - '"'
+            -
+              type: STR_REPLACE
+              parameters:
+                - '''"'
+                - '"'
+            -
+              type: STR_REPLACE
+              parameters:
+                - ''''
+                - '"'
+            -
+              type: STR_REPLACE
+              parameters:
+                - 'False'
+                - 'false'
+            -
+              type: STR_REPLACE
+              parameters:
+                - 'True'
+                - 'true'
+        -
+          uuid: c266ec8cd9714bd09d94a4b1f661b4a3
+          name: 'ICMP ping'
+          type: SIMPLE
+          key: icmpping
+          history: 1w
+          valuemap:
+            name: 'Service state'
+          tags:
+            -
+              tag: Application
+              value: Status
+          triggers:
+            -
+              uuid: 3515756f90604b74a3e69f0d3570985e
+              expression: 'max(/TeamRedMiner/icmpping,#3)=0'
+              name: 'Unavailable by ICMP ping'
+              priority: HIGH
+              description: 'Last three attempts returned timeout.  Please check device connectivity.'
+        -
+          uuid: 594d7342ce36481f9eaa44d645878884
+          name: 'ICMP loss'
+          type: SIMPLE
+          key: icmppingloss
+          history: 1w
+          value_type: FLOAT
+          units: '%'
+          tags:
+            -
+              tag: Application
+              value: Status
+          triggers:
+            -
+              uuid: c58d7044c22c44828caf87125df5226c
+              expression: 'min(/TeamRedMiner/icmppingloss,5m)>{$ICMP_LOSS_WARN} and min(/TeamRedMiner/icmppingloss,5m)<100'
+              name: 'High ICMP ping loss'
+              opdata: 'Loss: {ITEM.LASTVALUE1}'
+              priority: WARNING
+              dependencies:
+                -
+                  name: 'Unavailable by ICMP ping'
+                  expression: 'max(/TeamRedMiner/icmpping,#3)=0'
+        -
+          uuid: 8cdc7b4096e4401b8042ca9c9df6e198
+          name: 'ICMP response time'
+          type: SIMPLE
+          key: icmppingsec
+          history: 1w
+          value_type: FLOAT
+          units: s
+          tags:
+            -
+              tag: Application
+              value: Status
+          triggers:
+            -
+              uuid: b0e451013d9c414c94680a13708bb5d4
+              expression: 'avg(/TeamRedMiner/icmppingsec,5m)>{$ICMP_RESPONSE_TIME_WARN}'
+              name: 'High ICMP ping response time'
+              opdata: 'Value: {ITEM.LASTVALUE1}'
+              priority: WARNING
+              dependencies:
+                -
+                  name: 'High ICMP ping loss'
+                  expression: 'min(/TeamRedMiner/icmppingloss,5m)>{$ICMP_LOSS_WARN} and min(/TeamRedMiner/icmppingloss,5m)<100'
+                -
+                  name: 'Unavailable by ICMP ping'
+                  expression: 'max(/TeamRedMiner/icmpping,#3)=0'
+        -
+          uuid: 45f3f0884d0f4f74a603d3d351b0f4c4
+          name: 'TeamRedMiner GPU count'
+          type: DEPENDENT
+          key: miner.gpucount.count
+          delay: '0'
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''GPUS''][0][''Count'']'
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"gpucount"]'
+          triggers:
+            -
+              uuid: 8454ae59f6c9462fbf320ab92657ac75
+              expression: 'last(/TeamRedMiner/miner.gpucount.count)<{$GPUNUM}'
+              name: 'GPU lost'
+              priority: AVERAGE
+              description: 'Мы потеряли видюху (или несколько)'
+        -
+          uuid: 575ef27f6ad24d8888f929188ef08156
+          name: 'TeamRedMiner elapsed'
+          type: DEPENDENT
+          key: miner.summary.elapsed
+          delay: '0'
+          units: s
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''SUMMARY''][0][''Elapsed'']'
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"summary"]'
+        -
+          uuid: 2caac47719bf4b63a9b00743012376a9
+          name: 'TeamRedMiner MHS 30s'
+          type: DEPENDENT
+          key: miner.summary.mh30s
+          delay: '0'
+          value_type: FLOAT
+          units: Mh
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''SUMMARY''][0][''MHS 30s'']'
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"summary"]'
+          triggers:
+            -
+              uuid: 3d54ab11bd684773bcf2a6b5ca15573a
+              expression: 'avg(/TeamRedMiner/miner.summary.mh30s,1h)<{$HASHRATE}'
+              name: 'Hashrate too low (exp. {$HASHRATE})'
+              priority: AVERAGE
+        -
+          uuid: db233a547b6f419f9762d1a82b905a01
+          name: 'TeamRedMiner MHS av'
+          type: DEPENDENT
+          key: miner.summary.mhsav
+          delay: '0'
+          value_type: FLOAT
+          units: Mh
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''SUMMARY''][0][''MHS av'']'
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"summary"]'
+        -
+          uuid: 1271bb980649440b9630b6cd3872adfa
+          name: 'TeamRedMiner version'
+          type: DEPENDENT
+          key: miner.version.version
+          delay: '0'
+          trends: '0'
+          value_type: CHAR
+          inventory_link: SOFTWARE
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''VERSION''][0][''Miner'']'
+            -
+              type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 24h
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"version"]'
+          triggers:
+            -
+              uuid: a6e74891e5884470b0fcc81985fe300d
+              expression: 'last(/TeamRedMiner/miner.version.version,#1)<>last(/TeamRedMiner/miner.version.version,#2)'
+              name: 'TeamRedMiner version changed'
+              priority: INFO
+              manual_close: 'YES'
+        -
+          uuid: 8c50b2f9880c40639943d4107a9bdb0f
+          name: 'TeamRedMiner process'
+          type: ZABBIX_ACTIVE
+          key: 'proc.num[teamredminer]'
+          triggers:
+            -
+              uuid: f7c5071ad4c24711bec6547300c0688f
+              expression: 'last(/TeamRedMiner/proc.num[teamredminer])=0'
+              name: 'TeamRedMiner lost'
+              priority: AVERAGE
+              description: 'Майнер не запущен (либо еще не стартовал, либо уже упал совсем)'
+      macros:
+        -
+          macro: '{$CGM_PORT}'
+          value: '4028'
+        -
+          macro: '{$GPUNUM}'
+          value: '6'
+        -
+          macro: '{$HASHRATE}'
+          value: '300'
+        -
+          macro: '{$ICMP_LOSS_WARN}'
+          value: '20'
+        -
+          macro: '{$ICMP_RESPONSE_TIME_WARN}'
+          value: '0.15'
+      valuemaps:
+        -
+          uuid: fdafd249bc2b4c7bb46956ce4ad27eea
+          name: 'Service state'
+          mappings:
+            -
+              value: '0'
+              newvalue: Down
+            -
+              value: '1'
+              newvalue: Up
+  graphs:
+    -
+      uuid: e02b51cfdfc4417a8d40bdeb205aa023
+      name: 'ICMP ping'
+      graph_items:
+        -
+          sortorder: '1'
+          drawtype: BOLD_LINE
+          color: 1A7C11
+          item:
+            host: TeamRedMiner
+            key: icmppingsec
+    -
+      uuid: 90f2325961124955a2e8fab09f324a69
+      name: 'Total hashrate'
+      graph_items:
+        -
+          sortorder: '1'
+          color: 1A7C11
+          item:
+            host: TeamRedMiner
+            key: miner.summary.mhsav

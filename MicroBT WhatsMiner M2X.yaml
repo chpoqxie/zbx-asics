@@ -1,0 +1,1466 @@
+zabbix_export:
+  version: '5.4'
+  date: '2024-02-23T18:04:29Z'
+  groups:
+    -
+      uuid: 5a3b4210defe473da9627b2ca03e360c
+      name: Templates/Mining
+  templates:
+    -
+      uuid: 9af21cc1d12b4b32ace21cc4bb891a7c
+      template: 'MicroBT WhatsMiner M2X'
+      name: 'MicroBT WhatsMiner M2X'
+      groups:
+        -
+          name: Templates/Mining
+      items:
+        -
+          uuid: 112276a8618f4adc8de3798ca12c3f32
+          name: 'CGMiner: get devdetails'
+          type: EXTERNAL
+          key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"devdetails"]'
+          delay: 20m
+          history: '0'
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            -
+              type: STR_REPLACE
+              parameters:
+                - '"'''
+                - '"'
+            -
+              type: STR_REPLACE
+              parameters:
+                - '''"'
+                - '"'
+            -
+              type: STR_REPLACE
+              parameters:
+                - ''''
+                - '"'
+            -
+              type: STR_REPLACE
+              parameters:
+                - 'False'
+                - 'false'
+            -
+              type: STR_REPLACE
+              parameters:
+                - 'True'
+                - 'true'
+        -
+          uuid: 2ab88dd20cec4cb6a03fd31e0f23cb92
+          name: 'CGMiner: get devs'
+          type: EXTERNAL
+          key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"devs"]'
+          delay: 3m
+          history: '0'
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            -
+              type: STR_REPLACE
+              parameters:
+                - '"'''
+                - '"'
+            -
+              type: STR_REPLACE
+              parameters:
+                - '''"'
+                - '"'
+            -
+              type: STR_REPLACE
+              parameters:
+                - ''''
+                - '"'
+            -
+              type: STR_REPLACE
+              parameters:
+                - 'False'
+                - 'false'
+            -
+              type: STR_REPLACE
+              parameters:
+                - 'True'
+                - 'true'
+        -
+          uuid: 661180f89cdb4b46aeeaef0d8bb825a7
+          name: 'CGMiner: get psu'
+          type: EXTERNAL
+          key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"get_psu"]'
+          delay: 20m
+          history: '0'
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            -
+              type: STR_REPLACE
+              parameters:
+                - '"'''
+                - '"'
+            -
+              type: STR_REPLACE
+              parameters:
+                - '''"'
+                - '"'
+            -
+              type: STR_REPLACE
+              parameters:
+                - ''''
+                - '"'
+            -
+              type: STR_REPLACE
+              parameters:
+                - 'False'
+                - 'false'
+            -
+              type: STR_REPLACE
+              parameters:
+                - 'True'
+                - 'true'
+        -
+          uuid: 15a9a05e7807488084b5c61a7ef1dbe6
+          name: 'CGMiner: get summary'
+          type: EXTERNAL
+          key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"summary"]'
+          delay: 3m
+          history: '0'
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            -
+              type: STR_REPLACE
+              parameters:
+                - '"'''
+                - '"'
+            -
+              type: STR_REPLACE
+              parameters:
+                - '''"'
+                - '"'
+            -
+              type: STR_REPLACE
+              parameters:
+                - ''''
+                - '"'
+            -
+              type: STR_REPLACE
+              parameters:
+                - 'False'
+                - 'false'
+            -
+              type: STR_REPLACE
+              parameters:
+                - 'True'
+                - 'true'
+        -
+          uuid: e99490c790b7432b96676156ad87a912
+          name: 'Device: Model'
+          type: DEPENDENT
+          key: cgminer.devdetails.model
+          delay: '0'
+          trends: '0'
+          value_type: CHAR
+          inventory_link: MODEL
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''DEVDETAILS''][0][''Model'']'
+            -
+              type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 24h
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"devdetails"]'
+          triggers:
+            -
+              uuid: 3a76c162c2254fa28f15ba8a2055a3ad
+              expression: '(left(last(/MicroBT WhatsMiner M2X/cgminer.devdetails.model),3)="M20" or left(last(/MicroBT WhatsMiner M2X/cgminer.devdetails.model),3)="M21")=0'
+              name: 'Wrong template attached to Box'
+              opdata: '{ITEM.LASTVALUE1}'
+              priority: INFO
+        -
+          uuid: 5dec4d9cbd884c91b7eaea74c49b9198
+          name: 'CGMiner: ASC0: Chip Data'
+          type: DEPENDENT
+          key: cgminer.devs.asc0.chip.data
+          delay: '0'
+          trends: '0'
+          value_type: CHAR
+          inventory_link: URL_A
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''DEVS''][0][''Chip Data'']'
+            -
+              type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 24h
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"devs"]'
+        -
+          uuid: bca9e18bd9304a9ba79f75e4e7d99de9
+          name: 'CGMiner: ASC0: Chip Frequency'
+          type: DEPENDENT
+          key: cgminer.devs.asc0.chipfreq
+          delay: '0'
+          history: 60d
+          units: MHz
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''DEVS''][0][''Chip Frequency'']'
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"devs"]'
+        -
+          uuid: 82a06c775a58446da54ca12ffe50901a
+          name: 'CGMiner: ASC0: Effective Chips'
+          type: DEPENDENT
+          key: cgminer.devs.asc0.chipsalive
+          delay: '0'
+          history: 30d
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''DEVS''][0][''Effective Chips'']'
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"devs"]'
+        -
+          uuid: 66a25620158c4316b428ff1927c4bbdf
+          name: 'CGMiner: ASC0: Chip Temp Avg'
+          type: DEPENDENT
+          key: cgminer.devs.asc0.chiptempavg
+          delay: '0'
+          history: 60d
+          value_type: FLOAT
+          units: Celsius
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''DEVS''][0][''Chip Temp Avg'']'
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"devs"]'
+        -
+          uuid: eee0d6a77b14431b954c817eff8c53f1
+          name: 'CGMiner: ASC0: Chip Temp Max'
+          type: DEPENDENT
+          key: cgminer.devs.asc0.chiptempmax
+          delay: '0'
+          history: 60d
+          value_type: FLOAT
+          units: C
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''DEVS''][0][''Chip Temp Max'']'
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"devs"]'
+        -
+          uuid: 9eb7b7c897a04eafba37296393f5b41c
+          name: 'CGMiner: ASC0: Chip Temp Min'
+          type: DEPENDENT
+          key: cgminer.devs.asc0.chiptempmin
+          delay: '0'
+          history: 60d
+          value_type: FLOAT
+          units: C
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''DEVS''][0][''Chip Temp Min'']'
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"devs"]'
+        -
+          uuid: 8e00bde300cb40f6858a135f0a471e95
+          name: 'CGMiner: ASC0: Hardware Errors'
+          type: DEPENDENT
+          key: cgminer.devs.asc0.hwerrors
+          delay: '0'
+          history: 60d
+          units: errors
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''DEVS''][0][''Hardware Errors'']'
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"devs"]'
+        -
+          uuid: ef113be61d4842b69ad581a5adb74afc
+          name: 'CGMiner: ASC0: MHS average'
+          type: DEPENDENT
+          key: cgminer.devs.asc0.mhsav
+          delay: '0'
+          history: 60d
+          value_type: FLOAT
+          units: MHS
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''DEVS''][0][''MHS av'']'
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"devs"]'
+        -
+          uuid: ca195c204bdd464f97803a870aeb7aa1
+          name: 'CGMiner: ASC0: PCB serial'
+          type: DEPENDENT
+          key: cgminer.devs.asc0.pcbserial
+          delay: '0'
+          trends: '0'
+          value_type: CHAR
+          inventory_link: SOFTWARE_APP_A
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''DEVS''][0][''PCB SN'']'
+            -
+              type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 24h
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"devs"]'
+          triggers:
+            -
+              uuid: 29c57a5209c04620b8e36a08a4619c45
+              expression: 'last(/MicroBT WhatsMiner M2X/cgminer.devs.asc0.pcbserial,#1)<>last(/MicroBT WhatsMiner M2X/cgminer.devs.asc0.pcbserial,#2)'
+              name: 'ASC0 serial changed'
+              priority: INFO
+              manual_close: 'YES'
+        -
+          uuid: 57506ff1572d4002a2f614788f6d7723
+          name: 'CGMiner: ASC0: Status'
+          type: DEPENDENT
+          key: cgminer.devs.asc0.status
+          delay: '0'
+          history: 30d
+          trends: '0'
+          value_type: CHAR
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''DEVS''][0][''Status'']'
+            -
+              type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 2h
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"devs"]'
+        -
+          uuid: 9a8fdaeacf3e4ce48573c39d75b47773
+          name: 'CGMiner: ASC0: Temperature'
+          type: DEPENDENT
+          key: cgminer.devs.asc0.temperature
+          delay: '0'
+          history: 60d
+          value_type: FLOAT
+          units: C
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''DEVS''][0][''Temperature'']'
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"devs"]'
+        -
+          uuid: 19d09a55faba463d8a5877cfa9a7b3ff
+          name: 'CGMiner: ASC1: Chip Data'
+          type: DEPENDENT
+          key: cgminer.devs.asc1.chip.data
+          delay: '0'
+          trends: '0'
+          value_type: CHAR
+          inventory_link: URL_B
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''DEVS''][1][''Chip Data'']'
+            -
+              type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 24h
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"devs"]'
+        -
+          uuid: de14d3b34a7d4cee883c36ddfa165173
+          name: 'CGMiner: ASC1: Chip Frequency'
+          type: DEPENDENT
+          key: cgminer.devs.asc1.chipfreq
+          delay: '0'
+          history: 60d
+          units: MHz
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''DEVS''][1][''Chip Frequency'']'
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"devs"]'
+        -
+          uuid: 42c2419f1b524c6eb5f99c56ea0d4a1d
+          name: 'CGMiner: ASC1: Effective Chips'
+          type: DEPENDENT
+          key: cgminer.devs.asc1.chipsalive
+          delay: '0'
+          history: 30d
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''DEVS''][1][''Effective Chips'']'
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"devs"]'
+        -
+          uuid: 1d1463e951a146c097baac2f168d3de6
+          name: 'CGMiner: ASC1: Chip Temp Avg'
+          type: DEPENDENT
+          key: cgminer.devs.asc1.chiptempavg
+          delay: '0'
+          history: 60d
+          value_type: FLOAT
+          units: Celsius
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''DEVS''][1][''Chip Temp Avg'']'
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"devs"]'
+        -
+          uuid: c93a3c29ab3341d4a893d02aa9d933f4
+          name: 'CGMiner: ASC1: Chip Temp Max'
+          type: DEPENDENT
+          key: cgminer.devs.asc1.chiptempmax
+          delay: '0'
+          history: 60d
+          value_type: FLOAT
+          units: Celsius
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''DEVS''][1][''Chip Temp Max'']'
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"devs"]'
+        -
+          uuid: 9ee6cb8350a542b3a4969ba58f40d637
+          name: 'CGMiner: ASC1: Chip Temp Min'
+          type: DEPENDENT
+          key: cgminer.devs.asc1.chiptempmin
+          delay: '0'
+          history: 60d
+          value_type: FLOAT
+          units: Celsius
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''DEVS''][1][''Chip Temp Min'']'
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"devs"]'
+        -
+          uuid: 937a36f6fd2e4174b073d4b8053ce1e6
+          name: 'CGMiner: ASC1: Hardware Errors'
+          type: DEPENDENT
+          key: cgminer.devs.asc1.hwerrors
+          delay: '0'
+          history: 60d
+          units: errors
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''DEVS''][1][''Hardware Errors'']'
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"devs"]'
+        -
+          uuid: 6eeab66983694882ac8cf1f8f1784a1f
+          name: 'CGMiner: ASC1: MHS average'
+          type: DEPENDENT
+          key: cgminer.devs.asc1.mhsav
+          delay: '0'
+          history: 60d
+          value_type: FLOAT
+          units: MHS
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''DEVS''][1][''MHS av'']'
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"devs"]'
+        -
+          uuid: f10a1290e7684eaab1405e48c3d58678
+          name: 'CGMiner: ASC1: PCB serial'
+          type: DEPENDENT
+          key: cgminer.devs.asc1.pcbserial
+          delay: '0'
+          trends: '0'
+          value_type: CHAR
+          inventory_link: SOFTWARE_APP_B
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''DEVS''][1][''PCB SN'']'
+            -
+              type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 24h
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"devs"]'
+          triggers:
+            -
+              uuid: 58d339488fd54b028c4e146446c67c4f
+              expression: 'last(/MicroBT WhatsMiner M2X/cgminer.devs.asc1.pcbserial,#1)<>last(/MicroBT WhatsMiner M2X/cgminer.devs.asc1.pcbserial,#2)'
+              name: 'ASC1 serial changed'
+              priority: INFO
+              manual_close: 'YES'
+        -
+          uuid: 9eda50f7327947279a745f48f86eba1c
+          name: 'CGMiner: ASC1: Status'
+          type: DEPENDENT
+          key: cgminer.devs.asc1.status
+          delay: '0'
+          history: 30d
+          trends: '0'
+          value_type: CHAR
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''DEVS''][1][''Status'']'
+            -
+              type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 2h
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"devs"]'
+        -
+          uuid: ced6659bca4f4a13829f54b090da10a4
+          name: 'CGMiner: ASC1: Temperature'
+          type: DEPENDENT
+          key: cgminer.devs.asc1.temperature
+          delay: '0'
+          history: 60d
+          value_type: FLOAT
+          units: Celsius
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''DEVS''][1][''Temperature'']'
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"devs"]'
+        -
+          uuid: 2a26052f46ea46a5ae476466d5fca0c5
+          name: 'CGMiner: ASC2: Chip Data'
+          type: DEPENDENT
+          key: cgminer.devs.asc2.chip.data
+          delay: '0'
+          trends: '0'
+          value_type: CHAR
+          inventory_link: URL_C
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''DEVS''][2][''Chip Data'']'
+            -
+              type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 24h
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"devs"]'
+        -
+          uuid: f4549599870b42c99719e39ba045a1d3
+          name: 'CGMiner: ASC2: Chip Frequency'
+          type: DEPENDENT
+          key: cgminer.devs.asc2.chipfreq
+          delay: '0'
+          history: 60d
+          units: MHz
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''DEVS''][2][''Chip Frequency'']'
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"devs"]'
+        -
+          uuid: c68d970e5c1a45d78e33d6f54b955b62
+          name: 'CGMiner: ASC2: Effective Chips'
+          type: DEPENDENT
+          key: cgminer.devs.asc2.chipsalive
+          delay: '0'
+          history: 30d
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''DEVS''][2][''Effective Chips'']'
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"devs"]'
+        -
+          uuid: 3d41b84e0e2f4e468ffae011197e34b3
+          name: 'CGMiner: ASC2: Chip Temp Avg'
+          type: DEPENDENT
+          key: cgminer.devs.asc2.chiptempavg
+          delay: '0'
+          history: 60d
+          value_type: FLOAT
+          units: Celsius
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''DEVS''][2][''Chip Temp Avg'']'
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"devs"]'
+        -
+          uuid: 1cff19f19a3649b38ab4e8f4b4c55b16
+          name: 'CGMiner: ASC2: Chip Temp Max'
+          type: DEPENDENT
+          key: cgminer.devs.asc2.chiptempmax
+          delay: '0'
+          history: 60d
+          value_type: FLOAT
+          units: Celsius
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''DEVS''][2][''Chip Temp Max'']'
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"devs"]'
+        -
+          uuid: 0f5ffa84f4c84f4fbef622d40e8a5cf5
+          name: 'CGMiner: ASC2: Chip Temp Min'
+          type: DEPENDENT
+          key: cgminer.devs.asc2.chiptempmin
+          delay: '0'
+          history: 60d
+          value_type: FLOAT
+          units: Celsius
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''DEVS''][2][''Chip Temp Min'']'
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"devs"]'
+        -
+          uuid: f6a4611225264054ba77fa7c37d09f2a
+          name: 'CGMiner: ASC2: Hardware Errors'
+          type: DEPENDENT
+          key: cgminer.devs.asc2.hwerrors
+          delay: '0'
+          history: 60d
+          units: errors
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''DEVS''][2][''Hardware Errors'']'
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"devs"]'
+        -
+          uuid: 4ce2062281cd41bfa9388f359ec6535e
+          name: 'CGMiner: ASC2: MHS average'
+          type: DEPENDENT
+          key: cgminer.devs.asc2.mhsav
+          delay: '0'
+          history: 60d
+          value_type: FLOAT
+          units: MHS
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''DEVS''][2][''MHS av'']'
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"devs"]'
+        -
+          uuid: 85f2f536398a405a9ddcbba18892aae7
+          name: 'CGMiner: ASC2: PCB serial'
+          type: DEPENDENT
+          key: cgminer.devs.asc2.pcbserial
+          delay: '0'
+          trends: '0'
+          value_type: CHAR
+          inventory_link: SOFTWARE_APP_C
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''DEVS''][2][''PCB SN'']'
+            -
+              type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 24h
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"devs"]'
+          triggers:
+            -
+              uuid: 4052d18f88114568bd05ff7272301c28
+              expression: 'last(/MicroBT WhatsMiner M2X/cgminer.devs.asc2.pcbserial,#1)<>last(/MicroBT WhatsMiner M2X/cgminer.devs.asc2.pcbserial,#2)'
+              name: 'ASC2 serial changed'
+              priority: INFO
+              manual_close: 'YES'
+        -
+          uuid: 8d297cce24554290ad45b07df02985fd
+          name: 'CGMiner: ASC2: Status'
+          type: DEPENDENT
+          key: cgminer.devs.asc2.status
+          delay: '0'
+          history: 30d
+          trends: '0'
+          value_type: CHAR
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''DEVS''][2][''Status'']'
+            -
+              type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 2h
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"devs"]'
+        -
+          uuid: 08d3352d9d744a18a11bae43086c96f9
+          name: 'CGMiner: ASC2: Temperature'
+          type: DEPENDENT
+          key: cgminer.devs.asc2.temperature
+          delay: '0'
+          history: 60d
+          value_type: FLOAT
+          units: Celsius
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''DEVS''][2][''Temperature'']'
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"devs"]'
+        -
+          uuid: ff637b96ea304bc39151e453c76c9ca1
+          name: 'CGMiner: PSU Model'
+          type: DEPENDENT
+          key: cgminer.psu.model
+          delay: '0'
+          trends: '0'
+          value_type: CHAR
+          inventory_link: CHASSIS
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''Msg''][''model'']'
+            -
+              type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 24h
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"get_psu"]'
+        -
+          uuid: 9df9abe4ea9b4b0db43bdccbb9c64b88
+          name: 'CGMiner: PSU Software Version'
+          type: DEPENDENT
+          key: cgminer.psu.sw.version
+          delay: '0'
+          trends: '0'
+          value_type: CHAR
+          inventory_link: CONTRACT_NUMBER
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''Msg''][''sw_version'']'
+            -
+              type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 24h
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"get_psu"]'
+        -
+          uuid: 30c93fad8bb94f5f86563cd7c26e8475
+          name: 'CGMiner: CB Platform'
+          type: DEPENDENT
+          key: cgminer.summary.cb.platform
+          delay: '0'
+          history: 30d
+          trends: '0'
+          value_type: CHAR
+          inventory_link: HARDWARE
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''SUMMARY''][0][''CB Platform'']'
+            -
+              type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 24h
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"summary"]'
+        -
+          uuid: 7ada30cd4f894f168d31f8f7ace08628
+          name: 'CGMiner: CB Version'
+          type: DEPENDENT
+          key: cgminer.summary.cb.version
+          delay: '0'
+          history: 30d
+          trends: '0'
+          value_type: CHAR
+          inventory_link: HARDWARE_FULL
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''SUMMARY''][0][''CB Version'']'
+            -
+              type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 24h
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"summary"]'
+        -
+          uuid: d13d7a7cda9e4d9cbac8ef91ccc4a43d
+          name: 'CGMiner: Chip Temp Avg'
+          type: DEPENDENT
+          key: cgminer.summary.chiptempavg
+          delay: '0'
+          history: 60d
+          value_type: FLOAT
+          units: C
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''SUMMARY''][0][''Chip Temp Avg'']'
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"summary"]'
+        -
+          uuid: f3268e2eb2934332a9aba53fdc052bdb
+          name: 'CGMiner: Chip Temp Max'
+          type: DEPENDENT
+          key: cgminer.summary.chiptempmax
+          delay: '0'
+          history: 60d
+          value_type: FLOAT
+          units: C
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''SUMMARY''][0][''Chip Temp Max'']'
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"summary"]'
+        -
+          uuid: 86849678710c435583462e3469db1995
+          name: 'CGMiner: Chip Temp Min'
+          type: DEPENDENT
+          key: cgminer.summary.chiptempmin
+          delay: '0'
+          history: 60d
+          value_type: FLOAT
+          units: C
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''SUMMARY''][0][''Chip Temp Min'']'
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"summary"]'
+        -
+          uuid: 0d7566086a3043e9970ceed547b3282b
+          name: 'CGMiner: Worktime'
+          type: DEPENDENT
+          key: cgminer.summary.elapsed
+          delay: '0'
+          history: 60d
+          units: s
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''SUMMARY''][0][''Elapsed'']'
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"summary"]'
+          triggers:
+            -
+              uuid: a085d8d954264ed3816789d0d4b7aade
+              expression: 'last(/MicroBT WhatsMiner M2X/cgminer.summary.elapsed)<600'
+              name: 'CGMiner restarted'
+              opdata: 'elapsed time: {ITEM.LASTVALUE} sec'
+              priority: WARNING
+              manual_close: 'YES'
+              dependencies:
+                -
+                  name: 'Unavailable by ICMP ping'
+                  expression: 'max(/MicroBT WhatsMiner M2X/icmpping,#3)=0'
+        -
+          uuid: 62c4fdf92a304fe7b7c14f38059e1033
+          name: 'CGMiner: Error Code Count'
+          type: DEPENDENT
+          key: cgminer.summary.error.count
+          delay: '0'
+          history: 30d
+          units: errors
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''SUMMARY''][0][''Error Code Count'']'
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"summary"]'
+          triggers:
+            -
+              uuid: ff7f70ede3c74e38b62ba10ed4cb1c6d
+              expression: 'last(/MicroBT WhatsMiner M2X/cgminer.summary.error.count)>0'
+              name: 'Error code found'
+              opdata: '{ITEM.LASTVALUE1}'
+              priority: AVERAGE
+        -
+          uuid: c7f91e91e54c4ea8809c4cd580fc6b49
+          name: 'CGMiner: Fan Speed In'
+          type: DEPENDENT
+          key: cgminer.summary.fanspeedin
+          delay: '0'
+          history: 60d
+          units: rpm
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''SUMMARY''][0][''Fan Speed In'']'
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"summary"]'
+        -
+          uuid: eca72634645b4398b51881e95ef0117f
+          name: 'CGMiner: Fan Speed Out'
+          type: DEPENDENT
+          key: cgminer.summary.fanspeedout
+          delay: '0'
+          history: 60d
+          units: rpm
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''SUMMARY''][0][''Fan Speed Out'']'
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"summary"]'
+        -
+          uuid: a91fa8856aca43429062e9b09116ce25
+          name: 'CGMiner: Fan Speed Power'
+          type: DEPENDENT
+          key: cgminer.summary.fanspeedpower
+          delay: '0'
+          history: 60d
+          units: rpm
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''SUMMARY''][0][''Power Fanspeed'']'
+            -
+              type: MULTIPLIER
+              parameters:
+                - '0.5'
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"summary"]'
+        -
+          uuid: 98b5dbe417a945949e7af21945b218d4
+          name: 'CGMiner: Average Frequency'
+          type: DEPENDENT
+          key: cgminer.summary.freq_avg
+          delay: '0'
+          history: 60d
+          units: MHz
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''SUMMARY''][0][''freq_avg'']'
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"summary"]'
+        -
+          uuid: 2b72615744f247828d40afb9bd9202ce
+          name: 'CGMiner: Firmware Version'
+          type: DEPENDENT
+          key: cgminer.summary.fwversion
+          delay: '0'
+          trends: '0'
+          value_type: CHAR
+          inventory_link: SOFTWARE
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''SUMMARY''][0][''Firmware Version'']'
+            -
+              type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 12h
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"summary"]'
+          triggers:
+            -
+              uuid: 295a33c3ef364fa0b1ffdf84393d77a6
+              expression: 'last(/MicroBT WhatsMiner M2X/cgminer.summary.fwversion,#1) <> last(/MicroBT WhatsMiner M2X/cgminer.summary.fwversion,#2)'
+              name: 'Firmware has changed ({ITEM.VALUE2})'
+              priority: INFO
+              manual_close: 'YES'
+        -
+          uuid: 9076884d817c4ceda24073ca4bbb0497
+          name: 'CGMiner: Factory GHS'
+          type: DEPENDENT
+          key: cgminer.summary.ghsfactory
+          delay: '0'
+          history: 60d
+          units: GHS
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''SUMMARY''][0][''Factory GHS'']'
+            -
+              type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 8h
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"summary"]'
+        -
+          uuid: 5e9fef77c42d45508e82fbdd44fbb7ad
+          name: 'CGMiner: Hash Stable Cost Seconds'
+          type: DEPENDENT
+          key: cgminer.summary.hash.stable.cost.sec
+          delay: '0'
+          history: 60d
+          units: sec
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''SUMMARY''][0][''Hash Stable Cost Seconds'']'
+            -
+              type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 6h
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"summary"]'
+        -
+          uuid: edd41f989b0b4e3587412a7258944fd2
+          name: 'CGMiner: Hardware Errors'
+          type: DEPENDENT
+          key: cgminer.summary.hwerrors
+          delay: '0'
+          history: 60d
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''SUMMARY''][0][''Hardware Errors'']'
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"summary"]'
+        -
+          uuid: 9e5e89c7a2f94d3182a7f0be446d8699
+          name: 'CGMiner: MAC Address'
+          type: DEPENDENT
+          key: cgminer.summary.macad
+          delay: '0'
+          trends: '0'
+          value_type: CHAR
+          inventory_link: MACADDRESS_A
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''SUMMARY''][0][''MAC'']'
+            -
+              type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 12h
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"summary"]'
+        -
+          uuid: b2ecb9cea7584e6fab6efbcf4877e787
+          name: 'CGMiner: MHS average'
+          type: DEPENDENT
+          key: cgminer.summary.mhsav
+          delay: '0'
+          history: 60d
+          value_type: FLOAT
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''SUMMARY''][0][''MHS av'']'
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"summary"]'
+        -
+          uuid: 1d7130f7a44549008f248061ce9e6de7
+          name: 'CGMiner: Power'
+          type: DEPENDENT
+          key: cgminer.summary.power
+          delay: '0'
+          history: 60d
+          units: W
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''SUMMARY''][0][''Power'']'
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"summary"]'
+        -
+          uuid: f29fd3f080fc4966919e319627b49a1b
+          name: 'CGMiner: Power Current'
+          type: DEPENDENT
+          key: cgminer.summary.powercurrent
+          delay: '0'
+          history: 60d
+          units: A
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''SUMMARY''][0][''Power Current'']'
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"summary"]'
+        -
+          uuid: ce6d4c36f46344fb95c4857dde3b40e2
+          name: 'CGMiner: Software Name'
+          type: DEPENDENT
+          key: cgminer.summary.software
+          delay: '0'
+          history: 30d
+          trends: '0'
+          value_type: CHAR
+          inventory_link: OS
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''STATUS''][0][''Description'']'
+            -
+              type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 24h
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"summary"]'
+        -
+          uuid: 27a5a6ac1787488aae5822bf6709db9c
+          name: 'CGMiner: Temperature'
+          type: DEPENDENT
+          key: cgminer.summary.temperature
+          delay: '0'
+          history: 60d
+          value_type: FLOAT
+          units: Celsius
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''SUMMARY''][0][''Temperature'']'
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"summary"]'
+          triggers:
+            -
+              uuid: 05b55bde50df44b29609646d53245bfd
+              expression: 'last(/MicroBT WhatsMiner M2X/cgminer.summary.temperature)>=83'
+              name: 'Miner overheated'
+              opdata: 'temp is: {ITEM.LASTVALUE1}'
+              priority: AVERAGE
+        -
+          uuid: 3278852e1b574cf1b5ef3b0ba5f13b93
+          name: 'CGMiner: Uptime'
+          type: DEPENDENT
+          key: cgminer.summary.uptime
+          delay: '0'
+          history: 60d
+          units: s
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''SUMMARY''][0][''Uptime'']'
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"summary"]'
+          triggers:
+            -
+              uuid: bd98998453614c1ba06a5812d0afad1f
+              expression: 'last(/MicroBT WhatsMiner M2X/cgminer.summary.uptime)<600'
+              name: 'Box rebooted'
+              opdata: 'uptime: {ITEM.LASTVALUE}'
+              priority: AVERAGE
+              dependencies:
+                -
+                  name: 'Unavailable by ICMP ping'
+                  expression: 'max(/MicroBT WhatsMiner M2X/icmpping,#3)=0'
+        -
+          uuid: 85ccbdb43903490fb92632a77a47d6f9
+          name: 'CGMiner: Voltage'
+          type: DEPENDENT
+          key: cgminer.summary.voltage
+          delay: '0'
+          history: 60d
+          value_type: FLOAT
+          units: V
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''SUMMARY''][0][''Voltage'']'
+            -
+              type: MULTIPLIER
+              parameters:
+                - '0.01'
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"summary"]'
+        -
+          uuid: b7913785cc3043ff8d98244bb1a3d490
+          name: 'ICMP ping'
+          type: SIMPLE
+          key: icmpping
+          history: 1w
+          valuemap:
+            name: 'Service state'
+          tags:
+            -
+              tag: Application
+              value: Status
+          triggers:
+            -
+              uuid: 0d70a91a41234490910c9071323ddc2e
+              expression: 'max(/MicroBT WhatsMiner M2X/icmpping,#3)=0'
+              name: 'Unavailable by ICMP ping'
+              priority: HIGH
+              description: 'Last three attempts returned timeout.'
+        -
+          uuid: 8b7228642b6b47f39c7939e00d5b252c
+          name: 'ICMP loss'
+          type: SIMPLE
+          key: icmppingloss
+          history: 1w
+          value_type: FLOAT
+          units: '%'
+          tags:
+            -
+              tag: Application
+              value: Status
+          triggers:
+            -
+              uuid: 6fd4a3988a084dea80cabc767220cc1d
+              expression: 'min(/MicroBT WhatsMiner M2X/icmppingloss,5m)>{$ICMP_LOSS_WARN} and min(/MicroBT WhatsMiner M2X/icmppingloss,5m)<100'
+              name: 'High ICMP ping loss'
+              opdata: 'Loss: {ITEM.LASTVALUE1}'
+              priority: WARNING
+              dependencies:
+                -
+                  name: 'Unavailable by ICMP ping'
+                  expression: 'max(/MicroBT WhatsMiner M2X/icmpping,#3)=0'
+        -
+          uuid: ac3238d8e8f14feaa91695df37984a2e
+          name: 'ICMP response time'
+          type: SIMPLE
+          key: icmppingsec
+          history: 1w
+          value_type: FLOAT
+          units: s
+          tags:
+            -
+              tag: Application
+              value: Status
+          triggers:
+            -
+              uuid: 5787f888eebf4d8a94ff0294a5a76a67
+              expression: 'avg(/MicroBT WhatsMiner M2X/icmppingsec,5m)>{$ICMP_RESPONSE_TIME_WARN}'
+              name: 'High ICMP ping response time'
+              opdata: 'Value: {ITEM.LASTVALUE1}'
+              priority: WARNING
+              dependencies:
+                -
+                  name: 'High ICMP ping loss'
+                  expression: 'min(/MicroBT WhatsMiner M2X/icmppingloss,5m)>{$ICMP_LOSS_WARN} and min(/MicroBT WhatsMiner M2X/icmppingloss,5m)<100'
+                -
+                  name: 'Unavailable by ICMP ping'
+                  expression: 'max(/MicroBT WhatsMiner M2X/icmpping,#3)=0'
+      macros:
+        -
+          macro: '{$CGM_PORT}'
+          value: '4028'
+          description: 'CGMiner API port'
+        -
+          macro: '{$ICMP_LOSS_WARN}'
+          value: '20'
+        -
+          macro: '{$ICMP_RESPONSE_TIME_WARN}'
+          value: '0.15'
+        -
+          macro: '{$MHASH}'
+          value: '50000000'
+          description: 'average speed, MH (TH*1000*1000)'
+      valuemaps:
+        -
+          uuid: 68ee510cab254d3793301a4f2385722b
+          name: 'Service state'
+          mappings:
+            -
+              value: '0'
+              newvalue: Down
+            -
+              value: '1'
+              newvalue: Up
+  triggers:
+    -
+      uuid: 8497321ad7f2483080ffbed151151413
+      expression: 'max(/MicroBT WhatsMiner M2X/cgminer.summary.fanspeedin,#3)<100 or max(/MicroBT WhatsMiner M2X/cgminer.summary.fanspeedout,#3)<100 or max(/MicroBT WhatsMiner M2X/cgminer.summary.fanspeedpower,#3)<100'
+      name: 'Fan is off'
+      opdata: 'in {ITEM.LASTVALUE1}, out {ITEM.LASTVALUE2}, pwr {ITEM.LASTVALUE3}'
+      priority: HIGH
+      dependencies:
+        -
+          name: 'Unavailable by ICMP ping'
+          expression: 'max(/MicroBT WhatsMiner M2X/icmpping,#3)=0'
+    -
+      uuid: 9606f32fab7c4798979b3bd722343838
+      expression: 'avg(/MicroBT WhatsMiner M2X/cgminer.summary.fanspeedin,30m)>6800 or avg(/MicroBT WhatsMiner M2X/cgminer.summary.fanspeedout,30m)>6800'
+      name: 'Fan speed too high'
+      opdata: 'in {ITEM.LASTVALUE1}, out {ITEM.LASTVALUE2}'
+      priority: WARNING
+      description: 'обороты выше 6800 rpm'
+    -
+      uuid: 0e5c8d290a6340899aa9b3e847f0e140
+      expression: 'last(/MicroBT WhatsMiner M2X/cgminer.summary.mhsav)<{$MHASH} and last(/MicroBT WhatsMiner M2X/cgminer.summary.elapsed)>1920'
+      name: 'Hashrate too low'
+      opdata: '{ITEM.LASTVALUE1}'
+      priority: AVERAGE
+      description: 'сравниваем текущий хэшрейт с условным при условии аптайма выше 32 минут (обычно асик выходит на расчетную мощность в районе 20-30 минут)'
+    -
+      uuid: 66d6a8815af343a2aa6f2c8e9d15f864
+      expression: '(last(/MicroBT WhatsMiner M2X/cgminer.psu.model,#1)<>last(/MicroBT WhatsMiner M2X/cgminer.psu.model,#2) or last(/MicroBT WhatsMiner M2X/cgminer.psu.sw.version,#1)<>last(/MicroBT WhatsMiner M2X/cgminer.psu.sw.version,#2)) and length(last(/MicroBT WhatsMiner M2X/cgminer.psu.sw.version))>0'
+      name: 'PSU has changed'
+      priority: INFO
+      manual_close: 'YES'
+  graphs:
+    -
+      uuid: d0826a5753b14b64a60c896a30f70d24
+      name: 'CGMiner: Chip Frequencies'
+      graph_items:
+        -
+          sortorder: '1'
+          color: 80CBC4
+          item:
+            host: 'MicroBT WhatsMiner M2X'
+            key: cgminer.devs.asc0.chipfreq
+        -
+          sortorder: '2'
+          color: 43A047
+          item:
+            host: 'MicroBT WhatsMiner M2X'
+            key: cgminer.devs.asc1.chipfreq
+        -
+          sortorder: '3'
+          color: '615911'
+          item:
+            host: 'MicroBT WhatsMiner M2X'
+            key: cgminer.devs.asc2.chipfreq
+    -
+      uuid: 2cf675cb517445c2bfcad1ace5352a76
+      name: 'CGMiner: Fan Speeds'
+      height: '300'
+      graph_items:
+        -
+          sortorder: '1'
+          color: 1A7C11
+          item:
+            host: 'MicroBT WhatsMiner M2X'
+            key: cgminer.summary.fanspeedpower
+        -
+          sortorder: '2'
+          color: F44336
+          item:
+            host: 'MicroBT WhatsMiner M2X'
+            key: cgminer.summary.fanspeedin
+        -
+          sortorder: '3'
+          color: FFC107
+          item:
+            host: 'MicroBT WhatsMiner M2X'
+            key: cgminer.summary.fanspeedout
+    -
+      uuid: 3b4aa60bfd4442f894db06f53f488760
+      name: 'CGMiner: GHS average'
+      graph_items:
+        -
+          sortorder: '1'
+          color: 1A7C11
+          item:
+            host: 'MicroBT WhatsMiner M2X'
+            key: cgminer.summary.mhsav
+    -
+      uuid: 5be101100ca04c26b3aac8035b7f7ada
+      name: 'CGMiner: Hardware Errors'
+      graph_items:
+        -
+          sortorder: '1'
+          color: EF9A9A
+          item:
+            host: 'MicroBT WhatsMiner M2X'
+            key: cgminer.devs.asc0.hwerrors
+        -
+          sortorder: '2'
+          color: C2185B
+          item:
+            host: 'MicroBT WhatsMiner M2X'
+            key: cgminer.devs.asc1.hwerrors
+        -
+          sortorder: '3'
+          color: FF5722
+          item:
+            host: 'MicroBT WhatsMiner M2X'
+            key: cgminer.devs.asc2.hwerrors
+    -
+      uuid: 580f02b73b364d83ac6666a5c1a571a7
+      name: 'CGMiner: Temperatures'
+      height: '300'
+      graph_items:
+        -
+          sortorder: '1'
+          color: 1A7C11
+          item:
+            host: 'MicroBT WhatsMiner M2X'
+            key: cgminer.summary.chiptempmin
+        -
+          sortorder: '2'
+          color: F63100
+          item:
+            host: 'MicroBT WhatsMiner M2X'
+            key: cgminer.summary.chiptempmax
+        -
+          sortorder: '3'
+          color: 2774A4
+          item:
+            host: 'MicroBT WhatsMiner M2X'
+            key: cgminer.summary.chiptempavg
+        -
+          sortorder: '4'
+          drawtype: BOLD_LINE
+          color: A54F10
+          item:
+            host: 'MicroBT WhatsMiner M2X'
+            key: cgminer.summary.temperature
