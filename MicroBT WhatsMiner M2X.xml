@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <zabbix_export>
     <version>5.4</version>
-    <date>2022-04-08T01:04:36Z</date>
+    <date>2024-02-23T18:14:07Z</date>
     <groups>
         <group>
-            <uuid>36bff6c29af64692839d077febfc7079</uuid>
-            <name>Templates/Network devices</name>
+            <uuid>5a3b4210defe473da9627b2ca03e360c</uuid>
+            <name>Templates/Mining</name>
         </group>
     </groups>
     <templates>
@@ -15,7 +15,7 @@
             <name>MicroBT WhatsMiner M2X</name>
             <groups>
                 <group>
-                    <name>Templates/Network devices</name>
+                    <name>Templates/Mining</name>
                 </group>
             </groups>
             <items>
@@ -439,6 +439,15 @@
                     <master_item>
                         <key>cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},&quot;devs&quot;]</key>
                     </master_item>
+                    <triggers>
+                        <trigger>
+                            <uuid>29c57a5209c04620b8e36a08a4619c45</uuid>
+                            <expression>last(/MicroBT WhatsMiner M2X/cgminer.devs.asc0.pcbserial,#1)&lt;&gt;last(/MicroBT WhatsMiner M2X/cgminer.devs.asc0.pcbserial,#2)</expression>
+                            <name>ASC0 serial changed</name>
+                            <priority>INFO</priority>
+                            <manual_close>YES</manual_close>
+                        </trigger>
+                    </triggers>
                 </item>
                 <item>
                     <uuid>57506ff1572d4002a2f614788f6d7723</uuid>
@@ -684,6 +693,15 @@
                     <master_item>
                         <key>cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},&quot;devs&quot;]</key>
                     </master_item>
+                    <triggers>
+                        <trigger>
+                            <uuid>58d339488fd54b028c4e146446c67c4f</uuid>
+                            <expression>last(/MicroBT WhatsMiner M2X/cgminer.devs.asc1.pcbserial,#1)&lt;&gt;last(/MicroBT WhatsMiner M2X/cgminer.devs.asc1.pcbserial,#2)</expression>
+                            <name>ASC1 serial changed</name>
+                            <priority>INFO</priority>
+                            <manual_close>YES</manual_close>
+                        </trigger>
+                    </triggers>
                 </item>
                 <item>
                     <uuid>9eda50f7327947279a745f48f86eba1c</uuid>
@@ -929,6 +947,15 @@
                     <master_item>
                         <key>cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},&quot;devs&quot;]</key>
                     </master_item>
+                    <triggers>
+                        <trigger>
+                            <uuid>4052d18f88114568bd05ff7272301c28</uuid>
+                            <expression>last(/MicroBT WhatsMiner M2X/cgminer.devs.asc2.pcbserial,#1)&lt;&gt;last(/MicroBT WhatsMiner M2X/cgminer.devs.asc2.pcbserial,#2)</expression>
+                            <name>ASC2 serial changed</name>
+                            <priority>INFO</priority>
+                            <manual_close>YES</manual_close>
+                        </trigger>
+                    </triggers>
                 </item>
                 <item>
                     <uuid>8d297cce24554290ad45b07df02985fd</uuid>
@@ -1173,10 +1200,17 @@
                     <triggers>
                         <trigger>
                             <uuid>a085d8d954264ed3816789d0d4b7aade</uuid>
-                            <expression>last(/MicroBT WhatsMiner M2X/cgminer.summary.elapsed)&lt;1800</expression>
+                            <expression>last(/MicroBT WhatsMiner M2X/cgminer.summary.elapsed)&lt;600</expression>
                             <name>CGMiner restarted</name>
                             <opdata>elapsed time: {ITEM.LASTVALUE} sec</opdata>
-                            <priority>AVERAGE</priority>
+                            <priority>WARNING</priority>
+                            <manual_close>YES</manual_close>
+                            <dependencies>
+                                <dependency>
+                                    <name>Unavailable by ICMP ping</name>
+                                    <expression>max(/MicroBT WhatsMiner M2X/icmpping,#3)=0</expression>
+                                </dependency>
+                            </dependencies>
                         </trigger>
                     </triggers>
                 </item>
@@ -1193,12 +1227,6 @@
                             <type>JSONPATH</type>
                             <parameters>
                                 <parameter>$['SUMMARY'][0]['Error Code Count']</parameter>
-                            </parameters>
-                        </step>
-                        <step>
-                            <type>DISCARD_UNCHANGED_HEARTBEAT</type>
-                            <parameters>
-                                <parameter>12h</parameter>
                             </parameters>
                         </step>
                     </preprocessing>
@@ -1307,7 +1335,6 @@
                     <type>DEPENDENT</type>
                     <key>cgminer.summary.fwversion</key>
                     <delay>0</delay>
-                    <history>60d</history>
                     <trends>0</trends>
                     <value_type>CHAR</value_type>
                     <inventory_link>SOFTWARE</inventory_link>
@@ -1333,7 +1360,6 @@
                             <uuid>295a33c3ef364fa0b1ffdf84393d77a6</uuid>
                             <expression>last(/MicroBT WhatsMiner M2X/cgminer.summary.fwversion,#1) &lt;&gt; last(/MicroBT WhatsMiner M2X/cgminer.summary.fwversion,#2)</expression>
                             <name>Firmware has changed ({ITEM.VALUE2})</name>
-                            <opdata>{ITEM.LASTVALUE1}</opdata>
                             <priority>INFO</priority>
                             <manual_close>YES</manual_close>
                         </trigger>
@@ -1581,6 +1607,12 @@
                             <name>Box rebooted</name>
                             <opdata>uptime: {ITEM.LASTVALUE}</opdata>
                             <priority>AVERAGE</priority>
+                            <dependencies>
+                                <dependency>
+                                    <name>Unavailable by ICMP ping</name>
+                                    <expression>max(/MicroBT WhatsMiner M2X/icmpping,#3)=0</expression>
+                                </dependency>
+                            </dependencies>
                         </trigger>
                     </triggers>
                 </item>
@@ -1611,6 +1643,95 @@
                         <key>cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},&quot;summary&quot;]</key>
                     </master_item>
                 </item>
+                <item>
+                    <uuid>b7913785cc3043ff8d98244bb1a3d490</uuid>
+                    <name>ICMP ping</name>
+                    <type>SIMPLE</type>
+                    <key>icmpping</key>
+                    <history>1w</history>
+                    <valuemap>
+                        <name>Service state</name>
+                    </valuemap>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>Status</value>
+                        </tag>
+                    </tags>
+                    <triggers>
+                        <trigger>
+                            <uuid>0d70a91a41234490910c9071323ddc2e</uuid>
+                            <expression>max(/MicroBT WhatsMiner M2X/icmpping,#3)=0</expression>
+                            <name>Unavailable by ICMP ping</name>
+                            <priority>HIGH</priority>
+                            <description>Last three attempts returned timeout.</description>
+                        </trigger>
+                    </triggers>
+                </item>
+                <item>
+                    <uuid>8b7228642b6b47f39c7939e00d5b252c</uuid>
+                    <name>ICMP loss</name>
+                    <type>SIMPLE</type>
+                    <key>icmppingloss</key>
+                    <history>1w</history>
+                    <value_type>FLOAT</value_type>
+                    <units>%</units>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>Status</value>
+                        </tag>
+                    </tags>
+                    <triggers>
+                        <trigger>
+                            <uuid>6fd4a3988a084dea80cabc767220cc1d</uuid>
+                            <expression>min(/MicroBT WhatsMiner M2X/icmppingloss,5m)&gt;{$ICMP_LOSS_WARN} and min(/MicroBT WhatsMiner M2X/icmppingloss,5m)&lt;100</expression>
+                            <name>High ICMP ping loss</name>
+                            <opdata>Loss: {ITEM.LASTVALUE1}</opdata>
+                            <priority>WARNING</priority>
+                            <dependencies>
+                                <dependency>
+                                    <name>Unavailable by ICMP ping</name>
+                                    <expression>max(/MicroBT WhatsMiner M2X/icmpping,#3)=0</expression>
+                                </dependency>
+                            </dependencies>
+                        </trigger>
+                    </triggers>
+                </item>
+                <item>
+                    <uuid>ac3238d8e8f14feaa91695df37984a2e</uuid>
+                    <name>ICMP response time</name>
+                    <type>SIMPLE</type>
+                    <key>icmppingsec</key>
+                    <history>1w</history>
+                    <value_type>FLOAT</value_type>
+                    <units>s</units>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>Status</value>
+                        </tag>
+                    </tags>
+                    <triggers>
+                        <trigger>
+                            <uuid>5787f888eebf4d8a94ff0294a5a76a67</uuid>
+                            <expression>avg(/MicroBT WhatsMiner M2X/icmppingsec,5m)&gt;{$ICMP_RESPONSE_TIME_WARN}</expression>
+                            <name>High ICMP ping response time</name>
+                            <opdata>Value: {ITEM.LASTVALUE1}</opdata>
+                            <priority>WARNING</priority>
+                            <dependencies>
+                                <dependency>
+                                    <name>High ICMP ping loss</name>
+                                    <expression>min(/MicroBT WhatsMiner M2X/icmppingloss,5m)&gt;{$ICMP_LOSS_WARN} and min(/MicroBT WhatsMiner M2X/icmppingloss,5m)&lt;100</expression>
+                                </dependency>
+                                <dependency>
+                                    <name>Unavailable by ICMP ping</name>
+                                    <expression>max(/MicroBT WhatsMiner M2X/icmpping,#3)=0</expression>
+                                </dependency>
+                            </dependencies>
+                        </trigger>
+                    </triggers>
+                </item>
             </items>
             <macros>
                 <macro>
@@ -1619,11 +1740,35 @@
                     <description>CGMiner API port</description>
                 </macro>
                 <macro>
+                    <macro>{$ICMP_LOSS_WARN}</macro>
+                    <value>20</value>
+                </macro>
+                <macro>
+                    <macro>{$ICMP_RESPONSE_TIME_WARN}</macro>
+                    <value>0.15</value>
+                </macro>
+                <macro>
                     <macro>{$MHASH}</macro>
                     <value>50000000</value>
                     <description>average speed, MH (TH*1000*1000)</description>
                 </macro>
             </macros>
+            <valuemaps>
+                <valuemap>
+                    <uuid>68ee510cab254d3793301a4f2385722b</uuid>
+                    <name>Service state</name>
+                    <mappings>
+                        <mapping>
+                            <value>0</value>
+                            <newvalue>Down</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>1</value>
+                            <newvalue>Up</newvalue>
+                        </mapping>
+                    </mappings>
+                </valuemap>
+            </valuemaps>
         </template>
     </templates>
     <triggers>
@@ -1631,15 +1776,21 @@
             <uuid>8497321ad7f2483080ffbed151151413</uuid>
             <expression>max(/MicroBT WhatsMiner M2X/cgminer.summary.fanspeedin,#3)&lt;100 or max(/MicroBT WhatsMiner M2X/cgminer.summary.fanspeedout,#3)&lt;100 or max(/MicroBT WhatsMiner M2X/cgminer.summary.fanspeedpower,#3)&lt;100</expression>
             <name>Fan is off</name>
-            <opdata>in {ITEM.LASTVALUE1}, out {ITEM.LASTVALUE2}, power {ITEM.LASTVALUE3}</opdata>
+            <opdata>in {ITEM.LASTVALUE1}, out {ITEM.LASTVALUE2}, pwr {ITEM.LASTVALUE3}</opdata>
             <priority>HIGH</priority>
+            <dependencies>
+                <dependency>
+                    <name>Unavailable by ICMP ping</name>
+                    <expression>max(/MicroBT WhatsMiner M2X/icmpping,#3)=0</expression>
+                </dependency>
+            </dependencies>
         </trigger>
         <trigger>
             <uuid>9606f32fab7c4798979b3bd722343838</uuid>
             <expression>avg(/MicroBT WhatsMiner M2X/cgminer.summary.fanspeedin,30m)&gt;6800 or avg(/MicroBT WhatsMiner M2X/cgminer.summary.fanspeedout,30m)&gt;6800</expression>
             <name>Fan speed too high</name>
             <opdata>in {ITEM.LASTVALUE1}, out {ITEM.LASTVALUE2}</opdata>
-            <priority>AVERAGE</priority>
+            <priority>WARNING</priority>
             <description>обороты выше 6800 rpm</description>
         </trigger>
         <trigger>
@@ -1649,6 +1800,13 @@
             <opdata>{ITEM.LASTVALUE1}</opdata>
             <priority>AVERAGE</priority>
             <description>сравниваем текущий хэшрейт с условным при условии аптайма выше 32 минут (обычно асик выходит на расчетную мощность в районе 20-30 минут)</description>
+        </trigger>
+        <trigger>
+            <uuid>66d6a8815af343a2aa6f2c8e9d15f864</uuid>
+            <expression>(last(/MicroBT WhatsMiner M2X/cgminer.psu.model,#1)&lt;&gt;last(/MicroBT WhatsMiner M2X/cgminer.psu.model,#2) or last(/MicroBT WhatsMiner M2X/cgminer.psu.sw.version,#1)&lt;&gt;last(/MicroBT WhatsMiner M2X/cgminer.psu.sw.version,#2)) and length(last(/MicroBT WhatsMiner M2X/cgminer.psu.sw.version))&gt;0</expression>
+            <name>PSU has changed</name>
+            <priority>INFO</priority>
+            <manual_close>YES</manual_close>
         </trigger>
     </triggers>
     <graphs>
