@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <zabbix_export>
     <version>5.4</version>
-    <date>2022-04-08T01:05:06Z</date>
+    <date>2024-02-23T18:14:41Z</date>
     <groups>
         <group>
-            <uuid>36bff6c29af64692839d077febfc7079</uuid>
-            <name>Templates/Network devices</name>
+            <uuid>5a3b4210defe473da9627b2ca03e360c</uuid>
+            <name>Templates/Mining</name>
         </group>
     </groups>
     <templates>
@@ -15,7 +15,7 @@
             <name>MicroBT WhatsMiner M3X</name>
             <groups>
                 <group>
-                    <name>Templates/Network devices</name>
+                    <name>Templates/Mining</name>
                 </group>
             </groups>
             <items>
@@ -428,6 +428,7 @@
                     <key>cgminer.devs.asc0.hwerrors</key>
                     <delay>0</delay>
                     <history>60d</history>
+                    <status>DISABLED</status>
                     <units>errors</units>
                     <preprocessing>
                         <step>
@@ -675,6 +676,7 @@
                     <key>cgminer.devs.asc1.hwerrors</key>
                     <delay>0</delay>
                     <history>60d</history>
+                    <status>DISABLED</status>
                     <units>errors</units>
                     <preprocessing>
                         <step>
@@ -922,6 +924,7 @@
                     <key>cgminer.devs.asc2.hwerrors</key>
                     <delay>0</delay>
                     <history>60d</history>
+                    <status>DISABLED</status>
                     <units>errors</units>
                     <preprocessing>
                         <step>
@@ -1240,7 +1243,7 @@
                             <expression>last(/MicroBT WhatsMiner M3X/cgminer.summary.elapsed)&lt;1800</expression>
                             <name>CGMiner restarted</name>
                             <opdata>elapsed time: {ITEM.LASTVALUE} sec</opdata>
-                            <priority>AVERAGE</priority>
+                            <priority>WARNING</priority>
                         </trigger>
                     </triggers>
                 </item>
@@ -1277,12 +1280,6 @@
                             <type>JSONPATH</type>
                             <parameters>
                                 <parameter>$['SUMMARY'][0]['Error Code Count']</parameter>
-                            </parameters>
-                        </step>
-                        <step>
-                            <type>DISCARD_UNCHANGED_HEARTBEAT</type>
-                            <parameters>
-                                <parameter>12h</parameter>
                             </parameters>
                         </step>
                     </preprocessing>
@@ -1711,6 +1708,95 @@
                         <key>cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},&quot;summary&quot;]</key>
                     </master_item>
                 </item>
+                <item>
+                    <uuid>f0c3f46401c14ca6a4187cd58d3e9a5f</uuid>
+                    <name>ICMP ping</name>
+                    <type>SIMPLE</type>
+                    <key>icmpping</key>
+                    <history>1w</history>
+                    <valuemap>
+                        <name>Service state</name>
+                    </valuemap>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>Status</value>
+                        </tag>
+                    </tags>
+                    <triggers>
+                        <trigger>
+                            <uuid>9a1ea04fae274f899fbe9bb37e355a1d</uuid>
+                            <expression>max(/MicroBT WhatsMiner M3X/icmpping,#3)=0</expression>
+                            <name>Unavailable by ICMP ping</name>
+                            <priority>HIGH</priority>
+                            <description>Last three attempts returned timeout.</description>
+                        </trigger>
+                    </triggers>
+                </item>
+                <item>
+                    <uuid>d79aba12575b4ff989b3bd6083ff8e4f</uuid>
+                    <name>ICMP loss</name>
+                    <type>SIMPLE</type>
+                    <key>icmppingloss</key>
+                    <history>1w</history>
+                    <value_type>FLOAT</value_type>
+                    <units>%</units>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>Status</value>
+                        </tag>
+                    </tags>
+                    <triggers>
+                        <trigger>
+                            <uuid>93f00a17f1cb4433a7e8349682774106</uuid>
+                            <expression>min(/MicroBT WhatsMiner M3X/icmppingloss,5m)&gt;{$ICMP_LOSS_WARN} and min(/MicroBT WhatsMiner M3X/icmppingloss,5m)&lt;100</expression>
+                            <name>High ICMP ping loss</name>
+                            <opdata>Loss: {ITEM.LASTVALUE1}</opdata>
+                            <priority>WARNING</priority>
+                            <dependencies>
+                                <dependency>
+                                    <name>Unavailable by ICMP ping</name>
+                                    <expression>max(/MicroBT WhatsMiner M3X/icmpping,#3)=0</expression>
+                                </dependency>
+                            </dependencies>
+                        </trigger>
+                    </triggers>
+                </item>
+                <item>
+                    <uuid>8510b9494f164bbead8949227d0fdeae</uuid>
+                    <name>ICMP response time</name>
+                    <type>SIMPLE</type>
+                    <key>icmppingsec</key>
+                    <history>1w</history>
+                    <value_type>FLOAT</value_type>
+                    <units>s</units>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>Status</value>
+                        </tag>
+                    </tags>
+                    <triggers>
+                        <trigger>
+                            <uuid>746de177faca45179236288aa52acef2</uuid>
+                            <expression>avg(/MicroBT WhatsMiner M3X/icmppingsec,5m)&gt;{$ICMP_RESPONSE_TIME_WARN}</expression>
+                            <name>High ICMP ping response time</name>
+                            <opdata>Value: {ITEM.LASTVALUE1}</opdata>
+                            <priority>WARNING</priority>
+                            <dependencies>
+                                <dependency>
+                                    <name>High ICMP ping loss</name>
+                                    <expression>min(/MicroBT WhatsMiner M3X/icmppingloss,5m)&gt;{$ICMP_LOSS_WARN} and min(/MicroBT WhatsMiner M3X/icmppingloss,5m)&lt;100</expression>
+                                </dependency>
+                                <dependency>
+                                    <name>Unavailable by ICMP ping</name>
+                                    <expression>max(/MicroBT WhatsMiner M3X/icmpping,#3)=0</expression>
+                                </dependency>
+                            </dependencies>
+                        </trigger>
+                    </triggers>
+                </item>
             </items>
             <macros>
                 <macro>
@@ -1719,11 +1805,35 @@
                     <description>CGMiner API port</description>
                 </macro>
                 <macro>
+                    <macro>{$ICMP_LOSS_WARN}</macro>
+                    <value>20</value>
+                </macro>
+                <macro>
+                    <macro>{$ICMP_RESPONSE_TIME_WARN}</macro>
+                    <value>0.15</value>
+                </macro>
+                <macro>
                     <macro>{$MHASH}</macro>
                     <value>50000000</value>
                     <description>average speed, MH (TH*1000*1000)</description>
                 </macro>
             </macros>
+            <valuemaps>
+                <valuemap>
+                    <uuid>21ae64005d274935a143da6cdd75e7f5</uuid>
+                    <name>Service state</name>
+                    <mappings>
+                        <mapping>
+                            <value>0</value>
+                            <newvalue>Down</newvalue>
+                        </mapping>
+                        <mapping>
+                            <value>1</value>
+                            <newvalue>Up</newvalue>
+                        </mapping>
+                    </mappings>
+                </valuemap>
+            </valuemaps>
         </template>
     </templates>
     <triggers>
@@ -1739,7 +1849,7 @@
             <expression>avg(/MicroBT WhatsMiner M3X/cgminer.summary.fanspeedin,30m)&gt;6800 or avg(/MicroBT WhatsMiner M3X/cgminer.summary.fanspeedout,30m)&gt;6800</expression>
             <name>Fan speed too high</name>
             <opdata>in {ITEM.LASTVALUE1}, out {ITEM.LASTVALUE2}</opdata>
-            <priority>AVERAGE</priority>
+            <priority>WARNING</priority>
             <description>обороты выше 6800 rpm</description>
         </trigger>
         <trigger>
