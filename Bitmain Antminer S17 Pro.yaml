@@ -1,0 +1,905 @@
+zabbix_export:
+  version: '5.4'
+  date: '2024-02-23T18:03:31Z'
+  groups:
+    -
+      uuid: 5a3b4210defe473da9627b2ca03e360c
+      name: Templates/Mining
+  templates:
+    -
+      uuid: d99ee2e5fb86474b8b1b7a6b53d15fb5
+      template: 'Bitmain Antminer S17 Pro'
+      name: 'Bitmain Antminer S17 Pro'
+      groups:
+        -
+          name: Templates/Mining
+      items:
+        -
+          uuid: de40f9b0747f4f07a3ee239d7697d91f
+          name: 'CGMiner: get stats'
+          type: EXTERNAL
+          key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"stats"]'
+          delay: 3m
+          history: '0'
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            -
+              type: STR_REPLACE
+              parameters:
+                - ''''
+                - '"'
+        -
+          uuid: 2c358acc523a43259e7321673aebad50
+          name: 'CGMiner: get summary'
+          type: EXTERNAL
+          key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"summary"]'
+          delay: 5m
+          history: '0'
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            -
+              type: STR_REPLACE
+              parameters:
+                - '"'''
+                - '"'
+            -
+              type: STR_REPLACE
+              parameters:
+                - '''"'
+                - '"'
+            -
+              type: STR_REPLACE
+              parameters:
+                - ''''
+                - '"'
+            -
+              type: STR_REPLACE
+              parameters:
+                - 'False'
+                - 'false'
+            -
+              type: STR_REPLACE
+              parameters:
+                - 'True'
+                - 'true'
+        -
+          uuid: 3295f9f1bd7c417c8ed927215ed70a4d
+          name: 'Miner Model'
+          type: DEPENDENT
+          key: cgminer.miner.model
+          delay: '0'
+          trends: '0'
+          value_type: CHAR
+          inventory_link: MODEL
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''STATS''][0][''Type'']'
+            -
+              type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 12h
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"stats"]'
+        -
+          uuid: ac09066f9fe74f9e876ad934f6ed99e6
+          name: 'Miner Version'
+          type: DEPENDENT
+          key: cgminer.miner.version
+          delay: '0'
+          history: 30d
+          trends: '0'
+          value_type: CHAR
+          inventory_link: SOFTWARE
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''STATS''][0][''Miner'']'
+            -
+              type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 12h
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"stats"]'
+        -
+          uuid: 57e8730a34c54686ba3e53b000b6cdd7
+          name: 'Chain 1 ACNs'
+          type: DEPENDENT
+          key: cgminer.stats.chain.acn1
+          delay: '0'
+          history: 30d
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''STATS''][1][''chain_acn1'']'
+            -
+              type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 12h
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"stats"]'
+        -
+          uuid: a004abfa16c94efd8e722869e26c05ea
+          name: 'Chain 2 ACNs'
+          type: DEPENDENT
+          key: cgminer.stats.chain.acn2
+          delay: '0'
+          history: 30d
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''STATS''][1][''chain_acn2'']'
+            -
+              type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 12h
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"stats"]'
+        -
+          uuid: a5ebdab212c5458bb30ac6bdf381d35d
+          name: 'Chain 3 ACNs'
+          type: DEPENDENT
+          key: cgminer.stats.chain.acn3
+          delay: '0'
+          history: 30d
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''STATS''][1][''chain_acn3'']'
+            -
+              type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 12h
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"stats"]'
+        -
+          uuid: f3266919edfc4c5994f087e02a26ad04
+          name: 'Chain 1 Hardware Errors'
+          type: DEPENDENT
+          key: cgminer.stats.chain.hw1
+          delay: '0'
+          history: 30d
+          units: errors
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''STATS''][1][''chain_hw1'']'
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"stats"]'
+        -
+          uuid: aaf9758400cc47caa7f18c2b07bb61bc
+          name: 'Chain 2 Hardware Errors'
+          type: DEPENDENT
+          key: cgminer.stats.chain.hw2
+          delay: '0'
+          history: 30d
+          units: errors
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''STATS''][1][''chain_hw2'']'
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"stats"]'
+        -
+          uuid: 3b72509ea5174f268c7df42cc2e38c93
+          name: 'Chain 3 Hardware Errors'
+          type: DEPENDENT
+          key: cgminer.stats.chain.hw3
+          delay: '0'
+          history: 30d
+          units: errors
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''STATS''][1][''chain_hw3'']'
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"stats"]'
+        -
+          uuid: 972126dce887459f93a819cbc2c08843
+          name: 'Chain 1 Rate'
+          type: DEPENDENT
+          key: cgminer.stats.chain.rate1
+          delay: '0'
+          history: 30d
+          value_type: FLOAT
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''STATS''][1][''chain_rate1'']'
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"stats"]'
+        -
+          uuid: 5b01babf0df24da0b5b76c84b8d8c4d0
+          name: 'Chain 2 Rate'
+          type: DEPENDENT
+          key: cgminer.stats.chain.rate2
+          delay: '0'
+          history: 30d
+          value_type: FLOAT
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''STATS''][1][''chain_rate2'']'
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"stats"]'
+        -
+          uuid: 2f7f8079304f4a64b66a378e5222ce55
+          name: 'Chain 3 Rate'
+          type: DEPENDENT
+          key: cgminer.stats.chain.rate3
+          delay: '0'
+          history: 30d
+          value_type: FLOAT
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''STATS''][1][''chain_rate3'']'
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"stats"]'
+        -
+          uuid: 486654a092f24aae9b0d09b41b7e92bc
+          name: Uptime
+          type: DEPENDENT
+          key: cgminer.stats.elapsed
+          delay: '0'
+          history: 30d
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''STATS''][1][''Elapsed'']'
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"stats"]'
+          triggers:
+            -
+              uuid: 40ca234d1be0432cb0acf773ccc62f43
+              expression: 'last(/Bitmain Antminer S17 Pro/cgminer.stats.elapsed)<600'
+              name: 'CGMiner rebooted'
+              opdata: 'uptime {ITEM.LASTVALUE} sec'
+              priority: AVERAGE
+        -
+          uuid: d9b58c70db394c2786632b180c49a127
+          name: 'Factory Hashrate'
+          type: DEPENDENT
+          key: cgminer.stats.factory.rate
+          delay: '0'
+          history: 30d
+          value_type: FLOAT
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''STATS''][1][''total_rateideal'']'
+            -
+              type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 3h
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"stats"]'
+        -
+          uuid: 9a51e7a79e03485da4b54194c1ea0cf8
+          name: 'Fan 1'
+          type: DEPENDENT
+          key: cgminer.stats.fan1
+          delay: '0'
+          history: 30d
+          status: DISABLED
+          units: rpm
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''STATS''][1][''fan1'']'
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"stats"]'
+        -
+          uuid: 3b854855768f4400a7093004c6e38291
+          name: 'Fan 2'
+          type: DEPENDENT
+          key: cgminer.stats.fan2
+          delay: '0'
+          history: 30d
+          status: DISABLED
+          units: rpm
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''STATS''][1][''fan2'']'
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"stats"]'
+        -
+          uuid: 2d3a6efbbd3342de8835fb8ac8cc343d
+          name: 'Fan 3'
+          type: DEPENDENT
+          key: cgminer.stats.fan3
+          delay: '0'
+          history: 30d
+          status: DISABLED
+          units: rpm
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''STATS''][1][''fan3'']'
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"stats"]'
+        -
+          uuid: 6dfab074758743758cd4e833fbc5a1fb
+          name: 'Fan 4'
+          type: DEPENDENT
+          key: cgminer.stats.fan4
+          delay: '0'
+          history: 30d
+          status: DISABLED
+          units: rpm
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''STATS''][1][''fan4'']'
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"stats"]'
+        -
+          uuid: 322a56e5388d4b3ab63d22d9a0bd4988
+          name: 'Frequency 1'
+          type: DEPENDENT
+          key: cgminer.stats.freq1
+          delay: '0'
+          history: 30d
+          units: MHz
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''STATS''][1][''freq1'']'
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"stats"]'
+        -
+          uuid: 6bce021980d24828a40bb75dfbf085b1
+          name: 'Frequency 2'
+          type: DEPENDENT
+          key: cgminer.stats.freq2
+          delay: '0'
+          history: 30d
+          units: MHz
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''STATS''][1][''freq2'']'
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"stats"]'
+        -
+          uuid: f8a57cbf77c942db8283a6342ad9c43d
+          name: 'Frequency 3'
+          type: DEPENDENT
+          key: cgminer.stats.freq3
+          delay: '0'
+          history: 30d
+          units: MHz
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''STATS''][1][''freq3'']'
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"stats"]'
+        -
+          uuid: 3b9998f4127b424e9973aeb0791d1994
+          name: 'GHS average'
+          type: DEPENDENT
+          key: cgminer.stats.ghs.average
+          delay: '0'
+          history: 30d
+          value_type: FLOAT
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''STATS''][1][''GHS av'']'
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"stats"]'
+        -
+          uuid: d335c34ad5994aae9f309cb3a4178555
+          name: 'GHS 30m'
+          type: DEPENDENT
+          key: cgminer.stats.ghs.rate30m
+          delay: '0'
+          history: 30d
+          value_type: FLOAT
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''STATS''][1][''rate_30m'']'
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"stats"]'
+        -
+          uuid: 87fef16e7e124b128d954da78d777a95
+          name: 'Miner ID'
+          type: DEPENDENT
+          key: cgminer.stats.miner.id
+          delay: '0'
+          trends: '0'
+          value_type: CHAR
+          inventory_link: HARDWARE
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''STATS''][1][''miner_id'']'
+            -
+              type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 24h
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"stats"]'
+        -
+          uuid: f508287ef9d740f185bca2c1876f4d73
+          name: 'Temp Max (??)'
+          type: DEPENDENT
+          key: cgminer.stats.temp.max
+          delay: '0'
+          history: 30d
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''STATS''][1][''temp_max'']'
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"stats"]'
+        -
+          uuid: 3c44994b62dd4ae1a58f8dba0775ecbd
+          name: 'Temp 1.1'
+          type: DEPENDENT
+          key: cgminer.stats.temp1.1
+          delay: '0'
+          history: 30d
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''STATS''][1][''temp1'']'
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"stats"]'
+        -
+          uuid: 5b51958f8bcb4aac9dc8bf4d81dbb478
+          name: 'Temp 1.2'
+          type: DEPENDENT
+          key: cgminer.stats.temp1.2
+          delay: '0'
+          history: 30d
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''STATS''][1][''temp2'']'
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"stats"]'
+        -
+          uuid: 644256f31bf74e45964c6ef6f2619cf6
+          name: 'Temp 1.3'
+          type: DEPENDENT
+          key: cgminer.stats.temp1.3
+          delay: '0'
+          history: 30d
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''STATS''][1][''temp3'']'
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"stats"]'
+        -
+          uuid: 8138ab0ccd9348419dc2d84755f52a96
+          name: 'Temp 2.1'
+          type: DEPENDENT
+          key: cgminer.stats.temp2.1
+          delay: '0'
+          history: 30d
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''STATS''][1][''temp2_1'']'
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"stats"]'
+        -
+          uuid: 23cf3bf04ee842a7967118f2743f6a05
+          name: 'Temp 2.2'
+          type: DEPENDENT
+          key: cgminer.stats.temp2.2
+          delay: '0'
+          history: 30d
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''STATS''][1][''temp2_2'']'
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"stats"]'
+        -
+          uuid: 05ffb4a4bd28413080397681eb111f0a
+          name: 'Temp 2.3'
+          type: DEPENDENT
+          key: cgminer.stats.temp2.3
+          delay: '0'
+          history: 30d
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''STATS''][1][''temp2_3'']'
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"stats"]'
+        -
+          uuid: 72426c7384494bd9947cf9bc20b0dd05
+          name: 'Temp 3.1'
+          type: DEPENDENT
+          key: cgminer.stats.temp3.1
+          delay: '0'
+          history: 30d
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''STATS''][1][''temp3_1'']'
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"stats"]'
+        -
+          uuid: b069724f0bfc46ba9b1d487dc6b50833
+          name: 'Temp 3.2'
+          type: DEPENDENT
+          key: cgminer.stats.temp3.2
+          delay: '0'
+          history: 30d
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''STATS''][1][''temp3_2'']'
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"stats"]'
+        -
+          uuid: 21ab58724df34990bd47ee88e772ad21
+          name: 'Temp 3.3'
+          type: DEPENDENT
+          key: cgminer.stats.temp3.3
+          delay: '0'
+          history: 30d
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''STATS''][1][''temp3_3'']'
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"stats"]'
+        -
+          uuid: f8947a38f27444f697bf9d74b6680279
+          name: 'Found Blocks'
+          type: DEPENDENT
+          key: cgminer.summary.found
+          delay: '0'
+          history: 30d
+          units: blocks
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''SUMMARY''][0][''Found Blocks'']'
+            -
+              type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 12h
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"summary"]'
+          triggers:
+            -
+              uuid: 6d4e8647c9dd47578c76c4b97f744aae
+              expression: 'last(/Bitmain Antminer S17 Pro/cgminer.summary.found)>0'
+              recovery_mode: NONE
+              name: 'Block Found!'
+              priority: DISASTER
+              manual_close: 'YES'
+        -
+          uuid: 10575b88f0fe47afa8ef2dc1c47e7cb5
+          name: 'Software Name'
+          type: DEPENDENT
+          key: cgminer.summary.software
+          delay: '0'
+          history: 30d
+          trends: '0'
+          value_type: CHAR
+          inventory_link: OS
+          preprocessing:
+            -
+              type: JSONPATH
+              parameters:
+                - '$[''STATUS''][0][''Description'']'
+            -
+              type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - 12h
+          master_item:
+            key: 'cgminer-setkeh.py[{HOST.CONN},{$CGM_PORT},"summary"]'
+        -
+          uuid: 1b85519d88544e768084487effdd234d
+          name: 'ICMP ping'
+          type: SIMPLE
+          key: icmpping
+          history: 1w
+          valuemap:
+            name: 'Service state'
+          tags:
+            -
+              tag: Application
+              value: Status
+          triggers:
+            -
+              uuid: 7a64a3b309bd495daa41ca975c024ab9
+              expression: 'max(/Bitmain Antminer S17 Pro/icmpping,#3)=0'
+              name: 'Unavailable by ICMP ping'
+              priority: HIGH
+              description: 'Last three attempts returned timeout.  Please check device connectivity.'
+        -
+          uuid: a189a13d116c453c84fd6c82b124a013
+          name: 'ICMP loss'
+          type: SIMPLE
+          key: icmppingloss
+          history: 1w
+          value_type: FLOAT
+          units: '%'
+          tags:
+            -
+              tag: Application
+              value: Status
+          triggers:
+            -
+              uuid: cfc62003b7e64e309acb23969cb7f064
+              expression: 'min(/Bitmain Antminer S17 Pro/icmppingloss,5m)>{$ICMP_LOSS_WARN} and min(/Bitmain Antminer S17 Pro/icmppingloss,5m)<100'
+              name: 'High ICMP ping loss'
+              opdata: 'Loss: {ITEM.LASTVALUE1}'
+              priority: WARNING
+              dependencies:
+                -
+                  name: 'Unavailable by ICMP ping'
+                  expression: 'max(/Bitmain Antminer S17 Pro/icmpping,#3)=0'
+        -
+          uuid: 582ed7139136405b86cbde1163246f53
+          name: 'ICMP response time'
+          type: SIMPLE
+          key: icmppingsec
+          history: 1w
+          value_type: FLOAT
+          units: s
+          tags:
+            -
+              tag: Application
+              value: Status
+          triggers:
+            -
+              uuid: 413419ca5fc64720a429cf0f5594aaa7
+              expression: 'avg(/Bitmain Antminer S17 Pro/icmppingsec,5m)>{$ICMP_RESPONSE_TIME_WARN}'
+              name: 'High ICMP ping response time'
+              opdata: 'Value: {ITEM.LASTVALUE1}'
+              priority: WARNING
+              dependencies:
+                -
+                  name: 'High ICMP ping loss'
+                  expression: 'min(/Bitmain Antminer S17 Pro/icmppingloss,5m)>{$ICMP_LOSS_WARN} and min(/Bitmain Antminer S17 Pro/icmppingloss,5m)<100'
+                -
+                  name: 'Unavailable by ICMP ping'
+                  expression: 'max(/Bitmain Antminer S17 Pro/icmpping,#3)=0'
+      macros:
+        -
+          macro: '{$CGM_PORT}'
+          value: '4028'
+          description: 'CGMiner API port'
+        -
+          macro: '{$ICMP_LOSS_WARN}'
+          value: '20'
+        -
+          macro: '{$ICMP_RESPONSE_TIME_WARN}'
+          value: '0.15'
+      valuemaps:
+        -
+          uuid: b163f366a71647fb8644dfcdb7f02d27
+          name: 'Service state'
+          mappings:
+            -
+              value: '0'
+              newvalue: Down
+            -
+              value: '1'
+              newvalue: Up
+  triggers:
+    -
+      uuid: f4a6d233f24d44b3983efc71e2c665e0
+      expression: 'last(/Bitmain Antminer S17 Pro/cgminer.stats.fan1)=0 or last(/Bitmain Antminer S17 Pro/cgminer.stats.fan2)=0 or last(/Bitmain Antminer S17 Pro/cgminer.stats.fan3)=0 or last(/Bitmain Antminer S17 Pro/cgminer.stats.fan4)=0'
+      name: 'Fan is off'
+      opdata: 'fan1 {ITEM.LASTVALUE1}, fan2 {ITEM.LASTVALUE2}, fan3 {ITEM.LASTVALUE3}, fan4 {ITEM.LASTVALUE4}'
+      priority: HIGH
+    -
+      uuid: 07d4888181a5429b8cbdade28d54ff81
+      expression: '(last(/Bitmain Antminer S17 Pro/cgminer.stats.ghs.average)<(last(/Bitmain Antminer S17 Pro/cgminer.stats.factory.rate)*0.98)) and last(/Bitmain Antminer S17 Pro/cgminer.stats.elapsed)>1800'
+      name: 'Hashrate too low'
+      opdata: '{ITEM.LASTVALUE1}'
+      priority: AVERAGE
+    -
+      uuid: b1a02ac87a5a40a1b9d41cb905eb2185
+      expression: 'last(/Bitmain Antminer S17 Pro/cgminer.stats.ghs.rate30m)=0 and last(/Bitmain Antminer S17 Pro/cgminer.stats.elapsed)>1500'
+      name: 'Mining is off (GHS 30m = 0)'
+      priority: AVERAGE
+  graphs:
+    -
+      uuid: 1993f17fef9a46878b39b664aced3f5d
+      name: 'Chain Frequencies'
+      graph_items:
+        -
+          sortorder: '1'
+          color: 1A7C11
+          item:
+            host: 'Bitmain Antminer S17 Pro'
+            key: cgminer.stats.freq1
+        -
+          sortorder: '2'
+          color: F63100
+          item:
+            host: 'Bitmain Antminer S17 Pro'
+            key: cgminer.stats.freq2
+        -
+          sortorder: '3'
+          color: 2774A4
+          item:
+            host: 'Bitmain Antminer S17 Pro'
+            key: cgminer.stats.freq3
+    -
+      uuid: 79506d70135a4864b4f0edd3838988f9
+      name: 'Fan speeds'
+      graph_items:
+        -
+          sortorder: '1'
+          color: 1A7C11
+          item:
+            host: 'Bitmain Antminer S17 Pro'
+            key: cgminer.stats.fan1
+        -
+          sortorder: '2'
+          color: F63100
+          item:
+            host: 'Bitmain Antminer S17 Pro'
+            key: cgminer.stats.fan2
+        -
+          sortorder: '3'
+          color: 2774A4
+          item:
+            host: 'Bitmain Antminer S17 Pro'
+            key: cgminer.stats.fan3
+        -
+          sortorder: '4'
+          color: A54F10
+          item:
+            host: 'Bitmain Antminer S17 Pro'
+            key: cgminer.stats.fan4
+    -
+      uuid: 232607ffde4d4a198c9b266477e50c95
+      name: 'Hardware Errors'
+      graph_items:
+        -
+          sortorder: '1'
+          color: 1A7C11
+          item:
+            host: 'Bitmain Antminer S17 Pro'
+            key: cgminer.stats.chain.hw1
+        -
+          sortorder: '2'
+          color: F63100
+          item:
+            host: 'Bitmain Antminer S17 Pro'
+            key: cgminer.stats.chain.hw2
+        -
+          sortorder: '3'
+          color: 2774A4
+          item:
+            host: 'Bitmain Antminer S17 Pro'
+            key: cgminer.stats.chain.hw3
+    -
+      uuid: d8157457d3ed47b6b028bc0ca4a49153
+      name: Rates
+      graph_items:
+        -
+          sortorder: '1'
+          color: 1A7C11
+          item:
+            host: 'Bitmain Antminer S17 Pro'
+            key: cgminer.stats.chain.rate1
+        -
+          sortorder: '2'
+          color: F63100
+          item:
+            host: 'Bitmain Antminer S17 Pro'
+            key: cgminer.stats.chain.rate2
+        -
+          sortorder: '3'
+          color: 2774A4
+          item:
+            host: 'Bitmain Antminer S17 Pro'
+            key: cgminer.stats.chain.rate3
+    -
+      uuid: be2aae1f62a24ea6a8a13037f892dd4e
+      name: Temperatures
+      graph_items:
+        -
+          sortorder: '1'
+          color: 1A7C11
+          item:
+            host: 'Bitmain Antminer S17 Pro'
+            key: cgminer.stats.temp1.1
+        -
+          sortorder: '2'
+          color: F63100
+          item:
+            host: 'Bitmain Antminer S17 Pro'
+            key: cgminer.stats.temp1.2
+        -
+          sortorder: '3'
+          color: 2774A4
+          item:
+            host: 'Bitmain Antminer S17 Pro'
+            key: cgminer.stats.temp1.3
+        -
+          sortorder: '4'
+          color: A54F10
+          item:
+            host: 'Bitmain Antminer S17 Pro'
+            key: cgminer.stats.temp2.1
+        -
+          sortorder: '5'
+          color: FC6EA3
+          item:
+            host: 'Bitmain Antminer S17 Pro'
+            key: cgminer.stats.temp2.2
+        -
+          sortorder: '6'
+          color: 6C59DC
+          item:
+            host: 'Bitmain Antminer S17 Pro'
+            key: cgminer.stats.temp2.3
+        -
+          sortorder: '7'
+          color: AC8C14
+          item:
+            host: 'Bitmain Antminer S17 Pro'
+            key: cgminer.stats.temp3.1
+        -
+          sortorder: '8'
+          color: 611F27
+          item:
+            host: 'Bitmain Antminer S17 Pro'
+            key: cgminer.stats.temp3.2
+        -
+          sortorder: '9'
+          color: F230E0
+          item:
+            host: 'Bitmain Antminer S17 Pro'
+            key: cgminer.stats.temp3.3
+        -
+          sortorder: '10'
+          color: 5CCD18
+          item:
+            host: 'Bitmain Antminer S17 Pro'
+            key: cgminer.stats.temp.max
